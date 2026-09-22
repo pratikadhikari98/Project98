@@ -3,21 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Zip Drop — Website Preview</title>
+<title>प्रतीक प्रयोगशाला</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Akshar:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
   :root{
-    --bg:#0d1117;
-    --bg-panel:#12181f;
-    --bg-raised:#1a2129;
-    --border:#26303a;
-    --text:#e8edf2;
-    --text-dim:#8b98a5;
-    --accent:#5eead4;
-    --accent-dim:#2f9c8a;
-    --danger:#f0715a;
+    --bg:#ffffff;
+    --bg-panel:#f7f8f9;
+    --bg-raised:#f0f2f4;
+    --border:#e1e4e8;
+    --text:#15181c;
+    --text-dim:#6b7280;
+    --accent:#0d9488;
+    --accent-soft:#e6f6f4;
+    --accent-dim:#0f766e;
+    --danger:#dc4c39;
+    --danger-soft:#fdeeec;
     --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif;
+    --brand: 'Akshar', var(--sans);
     box-sizing:border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -33,25 +39,36 @@
     overflow:hidden;
   }
   header{
-    padding:14px 18px;
+    padding:12px 18px;
     border-bottom:1px solid var(--border);
     display:flex;
     align-items:center;
     gap:14px;
     flex-wrap:wrap;
-    background:var(--bg-panel);
+    background:var(--bg);
     flex-shrink:0;
   }
   .logo{
-    display:flex;align-items:center;gap:8px;
-    font-weight:600;font-size:15px;letter-spacing:-0.01em;
+    display:flex;align-items:baseline;gap:9px;
+    font-family:var(--brand);
+    font-weight:700;
+    font-size:20px;
+    letter-spacing:0.01em;
+    color:var(--text);
   }
-  .logo .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+  .logo .mark{
+    width:26px;height:26px;border-radius:7px;
+    background:var(--accent);
+    display:inline-flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .logo .mark svg{width:15px;height:15px;stroke:#fff;}
+  .logo .sub{font-family:var(--sans);font-weight:500;font-size:11px;color:var(--text-dim);letter-spacing:0.02em;}
   .toolbar{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap;}
   button, .filebtn{
     font-family:var(--sans);
     font-size:13px;
-    background:var(--bg-raised);
+    background:var(--bg);
     color:var(--text);
     border:1px solid var(--border);
     padding:7px 12px;
@@ -60,45 +77,73 @@
     display:inline-flex;
     align-items:center;
     gap:6px;
-    transition:border-color .15s, transform .1s;
+    transition:border-color .15s, background .15s, transform .1s;
   }
-  button:hover, .filebtn:hover{border-color:var(--accent-dim);}
+  button:hover, .filebtn:hover{border-color:var(--accent);background:var(--accent-soft);}
   button:active{transform:scale(0.97);}
   button:disabled{opacity:.4;cursor:not-allowed;}
-  button.primary{background:var(--accent);color:#062521;border-color:var(--accent);font-weight:600;}
-  button.primary:hover{background:#7ff1de;}
+  button.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;}
+  button.primary:hover{background:var(--accent-dim);border-color:var(--accent-dim);}
+  button.danger-btn{color:var(--danger);}
+  button.danger-btn:hover{border-color:var(--danger);background:var(--danger-soft);}
+  button.icon-only{padding:7px 9px;}
   .seg{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden;}
   .seg button{border:none;border-radius:0;background:transparent;}
-  .seg button.active{background:var(--bg-raised);color:var(--accent);}
+  .seg button.active{background:var(--accent-soft);color:var(--accent-dim);}
   input[type=file]{display:none;}
 
   main{flex:1;display:flex;min-height:0;}
 
   #dropzone{
     flex:1;
-    margin:auto;
-    max-width:640px;
+    overflow-y:auto;
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center;
-    text-align:center;
-    gap:18px;
-    padding:40px;
+    gap:34px;
+    padding:40px 20px 60px;
   }
   #dropzone.hidden{display:none;}
+  .dz-inner{width:100%;max-width:640px;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;}
   .dz-box{
     width:100%;
     border:1.5px dashed var(--border);
     border-radius:14px;
     padding:48px 28px;
+    background:var(--bg-panel);
     transition:border-color .15s, background .15s;
   }
-  .dz-box.drag{border-color:var(--accent);background:rgba(94,234,212,0.06);}
+  .dz-box.drag{border-color:var(--accent);background:var(--accent-soft);}
   .dz-icon{width:44px;height:44px;margin:0 auto 18px;color:var(--text-dim);}
   .dz-title{font-size:17px;font-weight:600;margin-bottom:6px;}
   .dz-sub{color:var(--text-dim);font-size:13.5px;line-height:1.6;}
   .dz-sub b{color:var(--text);font-weight:600;}
+
+  .saved-section{width:100%;max-width:640px;}
+  .saved-section h4{
+    font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);
+    margin:0 0 10px;font-weight:700;text-align:left;
+  }
+  .saved-empty{
+    color:var(--text-dim);font-size:13px;text-align:left;
+    border:1px solid var(--border);border-radius:10px;padding:16px;background:var(--bg-panel);
+  }
+  .saved-list{display:flex;flex-direction:column;gap:8px;}
+  .saved-item{
+    display:flex;align-items:center;gap:12px;
+    border:1px solid var(--border);border-radius:10px;
+    padding:10px 12px;background:var(--bg);
+    text-align:left;
+  }
+  .saved-item .sicon{
+    width:34px;height:34px;border-radius:8px;background:var(--accent-soft);color:var(--accent-dim);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;
+  }
+  .saved-item .smeta{flex:1;min-width:0;}
+  .saved-item .sname{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .saved-item .sinfo{font-size:11.5px;color:var(--text-dim);margin-top:1px;}
+  .saved-item .sactions{display:flex;gap:6px;flex-shrink:0;}
+  .saved-item .sactions button{padding:6px 9px;font-size:12px;}
 
   #workspace{flex:1;display:flex;min-height:0;}
   #workspace.hidden{display:none;}
@@ -113,7 +158,7 @@
   }
   #sidebar h4{
     font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);
-    padding:6px 14px;margin:0;font-weight:600;
+    padding:6px 14px;margin:0;font-weight:700;
   }
   .file-item{
     display:flex;align-items:center;gap:8px;
@@ -127,11 +172,11 @@
     text-overflow:ellipsis;
     border-left:2px solid transparent;
   }
-  .file-item:hover{color:var(--text);background:rgba(255,255,255,0.03);}
-  .file-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(94,234,212,0.06);}
+  .file-item:hover{color:var(--text);background:var(--bg-raised);}
+  .file-item.active{color:var(--accent-dim);border-left-color:var(--accent);background:var(--accent-soft);}
   .file-item .tag{
     font-size:9.5px;color:var(--text-dim);border:1px solid var(--border);border-radius:4px;
-    padding:0 4px;flex-shrink:0;
+    padding:0 4px;flex-shrink:0;background:var(--bg);
   }
 
   #stage{
@@ -139,7 +184,7 @@
     display:flex;
     flex-direction:column;
     min-width:0;
-    background:#05070a;
+    background:var(--bg-panel);
   }
   #addressbar{
     padding:8px 12px;
@@ -147,7 +192,7 @@
     display:flex;
     align-items:center;
     gap:8px;
-    background:var(--bg-panel);
+    background:var(--bg);
     flex-shrink:0;
   }
   #addressbar .path{
@@ -155,7 +200,7 @@
     font-family:var(--mono);
     font-size:12px;
     color:var(--text-dim);
-    background:var(--bg-raised);
+    background:var(--bg-panel);
     border:1px solid var(--border);
     border-radius:6px;
     padding:6px 10px;
@@ -163,7 +208,7 @@
     text-overflow:ellipsis;
     white-space:nowrap;
   }
-  #frame-wrap{flex:1;display:flex;justify-content:center;align-items:stretch;overflow:auto;padding:0;background:#05070a;}
+  #frame-wrap{flex:1;display:flex;justify-content:center;align-items:stretch;overflow:auto;padding:0;background:var(--bg-panel);}
   #frame-wrap.device-mobile{align-items:center;padding:20px;}
   iframe{
     border:none;
@@ -176,16 +221,10 @@
     height:844px;
     max-height:100%;
     border-radius:20px;
-    box-shadow:0 0 0 8px #1a2129, 0 20px 60px rgba(0,0,0,.5);
-  }
-
-  #empty-state{
-    flex:1;display:flex;align-items:center;justify-content:center;
-    color:var(--text-dim);font-size:13.5px;text-align:center;padding:30px;
+    box-shadow:0 0 0 8px var(--bg), 0 0 0 9px var(--border), 0 20px 50px rgba(15,23,42,.15);
   }
 
   .hint{font-size:11.5px;color:var(--text-dim);}
-  a.hint{color:var(--accent-dim);text-decoration:none;}
 
   ::-webkit-scrollbar{width:9px;height:9px;}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px;}
@@ -194,13 +233,18 @@
   @media (max-width: 720px){
     #sidebar{width:0;overflow:hidden;border:none;}
     #sidebar.open{width:200px;}
+    .saved-item{flex-wrap:wrap;}
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo"><span class="dot"></span> Zip Drop Preview</div>
+  <div class="logo">
+    <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" stroke-linejoin="round"/><path d="M12 3v18M4 7.5l8 4.5 8-4.5" stroke-linejoin="round"/></svg></span>
+    <span>प्रतीक प्रयोगशाला</span>
+    <span class="sub">zip → website preview</span>
+  </div>
   <div class="toolbar" id="toolbar" style="display:none;">
     <div class="seg" id="deviceseg">
       <button data-device="desktop" class="active">Desktop</button>
@@ -213,15 +257,21 @@
 
 <main>
   <div id="dropzone">
-    <div class="dz-box" id="dzbox">
-      <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-        <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div class="dz-title">आफ्नो website को zip यहाँ ड्र्याग गर्नुहोस्</div>
-      <div class="dz-sub">वा <label class="filebtn" style="display:inline-flex;margin:4px 0;"><span>Browse फाइल</span><input type="file" id="fileInput" accept=".zip"></label><br>
-        zip भित्र <b>index.html</b> भएको folder भए काम गर्छ — HTML, CSS, JS, images सबै लोड हुन्छ।<br>
-        सबै काम यही browser मा हुन्छ, कतै upload हुँदैन।</div>
+    <div class="dz-inner">
+      <div class="dz-box" id="dzbox">
+        <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="dz-title">आफ्नो website को zip यहाँ ड्र्याग गर्नुहोस्</div>
+        <div class="dz-sub">वा <label class="filebtn" style="display:inline-flex;margin:4px 0;"><span>Browse फाइल</span><input type="file" id="fileInput" accept=".zip"></label><br>
+          zip भित्र <b>index.html</b> भएको folder भए काम गर्छ — HTML, CSS, JS, images सबै लोड हुन्छ।<br>
+          zip यही browser मा (यही device मा) सेभ हुन्छ, बाहिर कतै जाँदैन।</div>
+      </div>
+    </div>
+    <div class="saved-section dz-inner">
+      <h4>सेभ गरिएका zip</h4>
+      <div id="savedList"></div>
     </div>
   </div>
 
@@ -257,10 +307,9 @@
   const newBtn = document.getElementById('newBtn');
   const reloadBtn = document.getElementById('reloadBtn');
   const deviceseg = document.getElementById('deviceseg');
+  const savedList = document.getElementById('savedList');
 
-  // raw[path] = { blob, url, isText, textType: 'html'|'css'|null }
   let raw = {};
-  // rendered html/css blob urls (post-rewrite)
   let rendered = {};
   let entryPath = null;
   let currentPath = null;
@@ -278,6 +327,132 @@
     };
     return map[e] || 'application/octet-stream';
   }
+  function fmtSize(bytes){
+    if(bytes < 1024) return bytes + ' B';
+    if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/1024/1024).toFixed(2) + ' MB';
+  }
+  function fmtDate(ts){
+    const d = new Date(ts);
+    return d.toLocaleDateString('ne-NP', {year:'numeric', month:'short', day:'numeric'}) + ' ' +
+           d.toLocaleTimeString('ne-NP', {hour:'2-digit', minute:'2-digit'});
+  }
+
+  // ---------- IndexedDB storage for uploaded zips ----------
+  const DB_NAME = 'zip-preview-store';
+  const STORE = 'zips';
+  let dbPromise = null;
+  function openDB(){
+    if(dbPromise) return dbPromise;
+    dbPromise = new Promise((resolve, reject)=>{
+      try{
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = ()=>{
+          const db = req.result;
+          if(!db.objectStoreNames.contains(STORE)){
+            db.createObjectStore(STORE, {keyPath:'id'});
+          }
+        };
+        req.onsuccess = ()=> resolve(req.result);
+        req.onerror = ()=> reject(req.error);
+      }catch(e){ reject(e); }
+    });
+    return dbPromise;
+  }
+  async function dbSave(record){
+    try{
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).put(record);
+        tx.oncomplete = ()=> resolve(true);
+        tx.onerror = ()=> reject(tx.error);
+      });
+    }catch(e){ console.warn('save failed', e); return false; }
+  }
+  async function dbGetAll(){
+    try{
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(STORE, 'readonly');
+        const req = tx.objectStore(STORE).getAll();
+        req.onsuccess = ()=> resolve(req.result.sort((a,b)=>b.id-a.id));
+        req.onerror = ()=> reject(req.error);
+      });
+    }catch(e){ console.warn('list failed', e); return []; }
+  }
+  async function dbGet(id){
+    try{
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(STORE, 'readonly');
+        const req = tx.objectStore(STORE).get(id);
+        req.onsuccess = ()=> resolve(req.result);
+        req.onerror = ()=> reject(req.error);
+      });
+    }catch(e){ console.warn('get failed', e); return null; }
+  }
+  async function dbDelete(id){
+    try{
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).delete(id);
+        tx.oncomplete = ()=> resolve(true);
+        tx.onerror = ()=> reject(tx.error);
+      });
+    }catch(e){ console.warn('delete failed', e); return false; }
+  }
+
+  async function refreshSavedList(){
+    const items = await dbGetAll();
+    if(items.length === 0){
+      savedList.innerHTML = '<div class="saved-empty">अहिलेसम्म कुनै zip सेभ भएको छैन। माथि zip राख्नुभयो भने यहाँ देखिन्छ, फेरि खोल्न वा download गर्न मिल्छ।</div>';
+      return;
+    }
+    savedList.innerHTML = '';
+    savedList.className = 'saved-list';
+    items.forEach(item=>{
+      const row = document.createElement('div');
+      row.className = 'saved-item';
+      row.innerHTML = `
+        <div class="sicon">📦</div>
+        <div class="smeta">
+          <div class="sname">${escapeHtml(item.name)}</div>
+          <div class="sinfo">${fmtSize(item.size)} · ${fmtDate(item.id)}</div>
+        </div>
+        <div class="sactions">
+          <button class="open-btn" title="Preview खोल्नुहोस्">खोल्नुहोस्</button>
+          <button class="dl-btn icon-only" title="Download">⬇</button>
+          <button class="del-btn danger-btn icon-only" title="Delete">🗑</button>
+        </div>`;
+      row.querySelector('.open-btn').addEventListener('click', ()=> loadFromRecord(item));
+      row.querySelector('.dl-btn').addEventListener('click', ()=> downloadRecord(item));
+      row.querySelector('.del-btn').addEventListener('click', async ()=>{
+        if(!confirm(`"${item.name}" मेटाउने हो?`)) return;
+        await dbDelete(item.id);
+        refreshSavedList();
+      });
+      savedList.appendChild(row);
+    });
+  }
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function downloadRecord(item){
+    const blob = new Blob([item.data], {type:'application/zip'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = item.name.endsWith('.zip') ? item.name : item.name + '.zip';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+  }
+  function loadFromRecord(item){
+    processArrayBuffer(item.data.slice(0), item.name, false);
+  }
 
   function resolvePath(basePath, rel){
     if(/^([a-z]+:)?\/\//i.test(rel) || rel.startsWith('data:') || rel.startsWith('blob:') || rel.startsWith('#')) return null;
@@ -292,7 +467,6 @@
 
   function findFile(path){
     if(raw[path]) return path;
-    // try case-insensitive / leading variations
     const lower = path.toLowerCase();
     for(const k in raw){ if(k.toLowerCase() === lower) return k; }
     return null;
@@ -342,9 +516,8 @@
         const found = findFile(resolved);
         if(!found) return;
         if(el.tagName === 'A'){
-          // link to another html page -> point to rendered version if we have it, else raw
           if(TEXT_EXT[extOf(found)] === 'html'){
-            el.setAttribute('href', found); // resolved later via router click, keep marker
+            el.setAttribute('href', found);
             el.setAttribute('data-zpreview-page', found);
             el.removeAttribute('target');
           }
@@ -357,7 +530,6 @@
         }
       });
     });
-    // inline <style> url() rewriting
     doc.querySelectorAll('style').forEach(styleEl=>{
       styleEl.textContent = rewriteCSS(styleEl.textContent, basePath);
     });
@@ -371,7 +543,6 @@
     }
   }
 
-  // click-through navigation inside iframe for internal html links
   function wireNav(){
     try{
       const doc = previewFrame.contentDocument;
@@ -416,17 +587,16 @@
     });
   }
 
-  async function handleZip(file){
+  async function processArrayBuffer(arrayBuffer, filename, shouldSave){
     dzbox.classList.remove('drag');
     dzbox.querySelector('.dz-title').textContent = 'Zip पढ्दै...';
     try{
-      const zip = await JSZip.loadAsync(file);
+      const zip = await JSZip.loadAsync(arrayBuffer);
       raw = {}; rendered = {}; entryPath = null;
 
       const entries = Object.keys(zip.files).filter(p => !zip.files[p].dir);
       if(entries.length === 0){ alert('Zip खाली छ।'); resetDz(); return; }
 
-      // detect single wrapping root folder and strip it
       let strip = '';
       const tops = new Set(entries.map(p=>p.split('/')[0]));
       if(tops.size === 1){
@@ -451,14 +621,12 @@
         }
       }
 
-      // pass: rewrite CSS files
       Object.keys(raw).filter(p=>raw[p].isText && raw[p].kind==='css').forEach(p=>{
         const rewritten = rewriteCSS(raw[p].text, p);
         const blob = new Blob([rewritten], {type:'text/css'});
         rendered[p] = URL.createObjectURL(blob);
       });
 
-      // pass: rewrite HTML files
       const htmlPaths = Object.keys(raw).filter(p=>raw[p].isText && raw[p].kind==='html');
       htmlPaths.forEach(p=>{
         const rewritten = rewriteHTML(raw[p].text, p);
@@ -474,6 +642,13 @@
 
       entryPath = findFile('index.html') || htmlPaths.sort((a,b)=>a.split('/').length-b.split('/').length)[0];
 
+      if(shouldSave){
+        const record = { id: Date.now(), name: filename, size: arrayBuffer.byteLength, data: arrayBuffer };
+        const ok = await dbSave(record);
+        if(!ok) console.warn('यो zip यस browser मा सेभ हुन सकेन (सायद ठाउँ पुगेन), तर preview हेर्न मिल्छ।');
+        refreshSavedList();
+      }
+
       buildSidebar();
       dropzone.classList.add('hidden');
       workspace.classList.remove('hidden');
@@ -486,11 +661,15 @@
     }
   }
 
+  async function handleZip(file){
+    const buf = await file.arrayBuffer();
+    processArrayBuffer(buf, file.name, true);
+  }
+
   function resetDz(){
     dzbox.querySelector('.dz-title').textContent = 'आफ्नो website को zip यहाँ ड्र्याग गर्नुहोस्';
   }
 
-  // drag & drop wiring
   ['dragenter','dragover'].forEach(ev=>{
     dzbox.addEventListener(ev, e=>{ e.preventDefault(); dzbox.classList.add('drag'); });
   });
@@ -514,6 +693,7 @@
     dropzone.classList.remove('hidden');
     resetDz();
     fileInput.value = '';
+    refreshSavedList();
   });
 
   reloadBtn.addEventListener('click', ()=>{
@@ -527,6 +707,8 @@
     btn.classList.add('active');
     frameWrap.classList.toggle('device-mobile', btn.dataset.device === 'mobile');
   });
+
+  refreshSavedList();
 })();
 </script>
 </body>
